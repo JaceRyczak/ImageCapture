@@ -2,7 +2,7 @@ import cv2
 import time
 import numpy as np
 
-hysterisis = True 
+hysteresis = True 
 img_counter = 0
 
 def diffImg(t0, t1, t2):
@@ -14,37 +14,32 @@ cam = cv2.VideoCapture(0)
  
 winName = "Movement Indicator"
 cv2.namedWindow(winName)
+winName1 = "Actual Image"
+cv2.namedWindow(winName1)
  
-# Read three images first:
-t_minus = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
-t = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
-t_plus = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
+# Read three initial images
+img1 = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
+img2 = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
+img3 = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
 ret, img_hold = cam.read()
-oldnow = time.time()
-print("Width =", cv2.CAP_PROP_FRAME_WIDTH)
-print("Height =", cv2.CAP_PROP_FRAME_HEIGHT)
-cv.SetCaptureProperty(capture, 3, 1920)
-cv.SetCaptureProperty(capture, 4, 1080)
+
 while True:
 	img_counter += 1
-	cv2.imshow( winName, diffImg(t_minus, t, t_plus) )
-	average = np.average(diffImg(t_minus, t, t_plus))
+	cv2.imshow( winName, diffImg(img1, img2, img3) )
+	average = np.average(diffImg(img1, img2, img3))
 	print("average is:", average)
-	print("Cycle speed is: ", 1/(time.time()-oldnow))
-	oldnow = time.time()
-	if average < 2 and hysterisis:
+	if average < 2 and hysteresis:
 		img_name = "test_image{}.png".format(img_counter)
 		cv2.imwrite(img_name, img_hold)
-		hysterisis = False
-https://github.com/JaceRyczak/MotionTrigger.git
+		hysteresis = False
 	if average > 5:
-		hysterisis = True
+		hysteresis = True
 	# Read next image
-	#time.sleep(0.5)
-	t_minus = t
-	t = t_plus
-	t_plus = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
+	img1 = img2
+	img2 = img3
+	img3 = cv2.cvtColor(cam.read()[1], cv2.COLOR_RGB2GRAY)
 	ret, img_hold = cam.read()
+	cv2.imshow( winName1, img_hold)
 	
 	key = cv2.waitKey(10)
 	if key == 27:
