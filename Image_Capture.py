@@ -1,6 +1,7 @@
-import cv2  
+import cv2 
+import numpy as np 
 import time
-import numpy as np
+import os
 
 #Variable Declaration
 cap_enable = False 
@@ -19,10 +20,12 @@ def diffImg(t0, t1, t2):
  
 # select video feed device and set desired image size and frequency of feed.
 cam = cv2.VideoCapture(0)
-cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1024)
-cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 768)
+cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 cam.set(cv2.CAP_PROP_FPS, 30)
 print("FPS:", cam.get(cv2.CAP_PROP_FPS))
+print("Width", cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+print("Height:", cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 ret, img_hold = cam.read() 					
 
 # Read three initial images and convert to 1D
@@ -44,7 +47,7 @@ while True:
 	# once image has movement again, save the stillest image captured and reset flags for next time movement stops.
 	if img_delta > thrs_move and cap_enable:
 		img_counter += 1		
-		img_name = "test_image{}.png".format(img_counter)
+		img_name = "/home/marswodonga/code/ImageCapture/images/test_image{}.jpg".format(img_counter)
 		cv2.imwrite(img_name, img_best)
 		cap_enable = False
 		delta_best = thrs_move
